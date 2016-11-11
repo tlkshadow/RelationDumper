@@ -1,6 +1,6 @@
 <?php
 
-namespace RelationDumper\Strategy\MySQL;
+namespace RelationDumper\Output\MySQL;
 
 /**
  * @author Marcel Domke <ma_domke@hotmail.com>

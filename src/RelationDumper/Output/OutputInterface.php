@@ -1,11 +1,11 @@
 <?php
 
-namespace RelationDumper\Strategy;
+namespace RelationDumper\Output;
 
 /**
  * @author Marcel Domke <ma_domke@hotmail.com>
  */
-interface StrategyInterface
+interface OutputInterface
 {
     public function dump($data);
 }

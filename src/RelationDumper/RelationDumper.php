@@ -3,7 +3,7 @@
 namespace RelationDumper;
 
 use RelationDumper\DataCollector\DataCollectorInterface;
-use RelationDumper\Strategy\StrategyInterface;
+use RelationDumper\Output\OutputInterface;
 
 /**
  * @author Marcel Domke <ma_domke@hotmail.com>
@@ -11,9 +11,9 @@ use RelationDumper\Strategy\StrategyInterface;
 class RelationDumper
 {
     /**
-     * @var StrategyInterface
+     * @var OutputInterface
      */
-    private $strategy;
+    private $output;
     
     /**
      * @var DataCollectorInterface
@@ -22,12 +22,12 @@ class RelationDumper
 
     /**
      * @param DataCollectorInterface $dataCollector
-     * @param StrategyInterface $strategy
+     * @param OutputInterface $output
      */
-    public function __construct(DataCollectorInterface $dataCollector, StrategyInterface $strategy)
+    public function __construct(DataCollectorInterface $dataCollector, OutputInterface $output)
     {
         $this->dataCollector = $dataCollector;
-        $this->strategy = $strategy;
+        $this->output = $output;
     }
 
     /**
@@ -35,7 +35,7 @@ class RelationDumper
      */
     public function execute()
     {
-        return $this->strategy->dump(
+        return $this->output->dump(
             $this->dataCollector->getData()
         );
     }

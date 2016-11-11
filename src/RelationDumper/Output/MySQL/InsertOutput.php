@@ -1,13 +1,13 @@
 <?php
 
-namespace RelationDumper\Strategy\MySQL;
+namespace RelationDumper\Output\MySQL;
 
-use RelationDumper\Strategy\StrategyInterface;
+use RelationDumper\Output\OutputInterface;
 
 /**
  * @author Marcel Domke <ma_domke@hotmail.com>
  */
-class InsertStrategy implements StrategyInterface
+class InsertOutput implements OutputInterface
 {
     use MySqlHelperTrait;
 

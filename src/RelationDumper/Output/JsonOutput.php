@@ -1,11 +1,11 @@
 <?php
 
-namespace RelationDumper\Strategy;
+namespace RelationDumper\Output;
 
 /**
  * @author Marcel Domke <ma_domke@hotmail.com>
  */
-class JsonStrategy implements StrategyInterface
+class JsonOutput implements OutputInterface
 {
     /**
      * @link http://php.net/manual/en/function.json-encode.php For more information about $options
