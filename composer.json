@@ -1,0 +1,17 @@
+{
+    "name": "marceldomke/dumper",
+    "authors": [
+        {
+            "name": "tlkshadow",
+            "email": "ma_domke@hotmail.com"
+        }
+    ],
+    "require": {
+
+    },
+    "autoload": {
+        "psr-0": {
+            "RelationDumper\\": "src/"
+        }
+    }
+}
