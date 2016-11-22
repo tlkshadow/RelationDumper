@@ -1,13 +1,15 @@
 <?php
 
-namespace RelationDumper\DataCollector;
+namespace RelationDumper\DataCollector\MySQL;
 
+use ArrayObject;
 use PDO;
+use RelationDumper\DataCollector\DataCollectorInterface;
 
 /**
  * @author Marcel Domke <ma_domke@hotmail.com>
  */
-class MySqlDataCollector implements DataCollectorInterface
+class PdoDataCollector implements DataCollectorInterface
 {
     /**
      * @var string
@@ -18,6 +20,16 @@ class MySqlDataCollector implements DataCollectorInterface
      * @var int|string
      */
     private $pkValue;
+
+    /**
+     * @var int
+     */
+    private $depth = 1;
+
+    /**
+     * @var int
+     */
+    private $currentDepth = 0;
 
     /**
      * @var PDO
@@ -42,6 +54,13 @@ class MySqlDataCollector implements DataCollectorInterface
         $result[$this->table] = $parentAttributes;
 
         return array_reverse(array_merge($result, $this->getForeignKeyInformation($this->table, $parentAttributes)));
+    }
+
+    public function setDepth($depth)
+    {
+        $this->depth = $depth;
+
+        return $this;
     }
 
     /**
@@ -74,23 +93,34 @@ class MySqlDataCollector implements DataCollectorInterface
      *
      * @return array
      */
-    private function getForeignKeyInformation($table, $parentAttributes)
+    private function getForeignKeyInformation($currentTable, $parentAttributes)
     {
-        $foreignKeys = $this->getForeignKeys($table);
+        $foreignKeys = $this->getAllForeignKeysFromTable($currentTable);
 
         $result = [];
-        $parentTable = [];
-        foreach ($foreignKeys as $foreignKey) {
-            $parentTable[] = $table;
-            $table = $foreignKey['REFERENCED_TABLE_NAME'];
-            $pk = $foreignKey['REFERENCED_COLUMN_NAME'];
 
-            $result[implode('_', $parentTable).'_'.$table] = $parentAttributes;
-            $result = array_merge($result, $this->getForeignKeyInformation($table, $parentAttributes));
-            if (array_key_exists($foreignKey['COLUMN_NAME'], $parentAttributes)) {
-                $parentAttributes = $this->getAttributes($table, $pk, $parentAttributes[$foreignKey['COLUMN_NAME']]);
+        $parentTable = [];
+        $arrayObject = new ArrayObject( $foreignKeys );
+        foreach ($arrayObject->getIterator() as $foreignKey) {
+            if (!in_array($currentTable, $parentTable)) {
+                $parentTable[] = $currentTable;
             }
+            $pk = $foreignKey['REFERENCED_COLUMN_NAME'];
+            $table = $foreignKey['REFERENCED_TABLE_NAME'];
+
+            $attributes = $this->getAttributes($table, $pk, $parentAttributes[$foreignKey['COLUMN_NAME']]);
+            $result[implode(self::DATA_SEPARATOR, $parentTable).self::DATA_SEPARATOR.$table] = $attributes;
+
+            /*
+             // go deeper for the next table
+             $result = array_merge($result, $this->getForeignKeyInformation($table, $parentAttributes));
+            $parentAttributes = [];
+            if (array_key_exists($foreignKey['COLUMN_NAME'], $parentAttributes)) {
+                $parentAttributes = ;
+            }*/
         }
+
+        var_dump($this->currentDepth);
 
         return $result;
     }
@@ -100,18 +130,19 @@ class MySqlDataCollector implements DataCollectorInterface
      *
      * @return array
      */
-    private function getForeignKeys($table)
+    private function getAllForeignKeysFromTable($table)
     {
-        $sql = sprintf(
+        $sql =
             "SELECT 
               TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME
              FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE 
-             WHERE REFERENCED_TABLE_SCHEMA IS NOT NULL AND TABLE_NAME = '%s'",
-            $table
-        );
+             WHERE REFERENCED_TABLE_SCHEMA IS NOT NULL AND TABLE_NAME = '".$table."'";
 
         $stm = $this->connection->prepare($sql);
+
         $stm->execute();
+
+        $this->currentDepth++;
 
         return $stm->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -15,8 +15,6 @@ DROP TABLE IF EXISTS `document`;
 CREATE TABLE `document` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `type` enum('profil_image','event_image','post_image') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `path` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -32,15 +30,6 @@ CREATE TABLE `event` (
   `location_id` int(11) DEFAULT NULL,
   `author_id` int(11) DEFAULT NULL,
   `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `private_description` longtext COLLATE utf8_unicode_ci,
-  `public_description` longtext COLLATE utf8_unicode_ci,
-  `event_start` datetime DEFAULT NULL,
-  `event_end` datetime DEFAULT NULL,
-  `visitor_limit` int(11) NOT NULL,
-  `is_public_event` enum('1','0') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `friends_can_see_event` enum('0','1') COLLATE utf8_unicode_ci DEFAULT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_3BAE0AA764D218E` (`location_id`),
   KEY `IDX_3BAE0AA7F675F31B` (`author_id`),

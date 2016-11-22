@@ -7,6 +7,8 @@ namespace RelationDumper\DataCollector;
  */
 interface DataCollectorInterface
 {
+    const DATA_SEPARATOR = '/';
+
     /**
      * @return mixed
      */

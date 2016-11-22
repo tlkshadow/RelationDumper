@@ -2,6 +2,7 @@
 
 namespace RelationDumper\Output\MySQL;
 
+use RelationDumper\DataCollector\DataCollectorInterface;
 use RelationDumper\Output\OutputInterface;
 
 /**
@@ -20,11 +21,18 @@ class InsertOutput implements OutputInterface
     {
         $return = [];
         foreach ($data as $t => $row) {
-            $values = array_map(function ($value) {
-                return $this->prepareValue($value);
-            }, array_values($row));
+            $t = explode(DataCollectorInterface::DATA_SEPARATOR, $t);
+            if ($row) {
+                $values = array_map(function ($value) {
+                    return $this->prepareValue($value);
+                }, array_values($row));
 
-            $return[] = sprintf('INSERT %s VALUES (%s);', $t, implode(', ', $values));
+                $table = end($t);
+                $keys = implode(', ', array_keys($row));
+                $values = implode(', ', $values);
+
+                $return[] = sprintf('INSERT INTO %s (%s) VALUES (%s);', $table, $keys, $values);
+            }
         }
 
         return $return;
